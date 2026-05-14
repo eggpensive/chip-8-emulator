@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 //chip 8 machine structure
 struct Chip8
@@ -19,9 +20,11 @@ struct Chip8
     uint16_t opcode;
 };
 
-//load ROM
+
 const unsigned int START_ADDRESS = 0x200;
 
+
+//load ROM
 void LoadROM(struct Chip8 *chip8, const char *filename)
 {
     FILE *romfPtr;
@@ -44,6 +47,15 @@ void LoadROM(struct Chip8 *chip8, const char *filename)
     
 
     fclose(romfPtr);
+}
+
+
+//initialize the machine
+void initChip8(struct Chip8 *chip8)
+{
+    memset(chip8, 0, sizeof(struct Chip8)); //sets to zero to clean garbage value
+
+    chip8->pc = START_ADDRESS;              
 }
 
 int main(int argc, char *argv[])
