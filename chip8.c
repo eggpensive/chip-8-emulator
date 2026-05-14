@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <stdint.h>
+#include <stdlib.h>
 
+//chip 8 machine structure
 struct Chip8
 {
     uint8_t registers[16];
@@ -17,9 +19,38 @@ struct Chip8
     uint16_t opcode;
 };
 
+//load ROM
+const unsigned int START_ADDRESS = 0x200;
+
+void LoadROM(struct Chip8 *chip8, const char *filename)
+{
+    FILE *romfPtr;
+    
+    if ((romfPtr = fopen(filename, "rb")) == NULL)
+    {
+        puts("Unable to open file.");
+        exit(1);
+    }
+    else
+    {
+        //move file pointer to end of file and check file size
+        fseek(romfPtr, 0, SEEK_END);
+        long size = ftell(romfPtr);
+
+        rewind(romfPtr);
+
+        fread(&chip8->memory[START_ADDRESS], 1, size, romfPtr);
+    }
+    
+
+    fclose(romfPtr);
+}
+
 int main(int argc, char *argv[])
 {
     (void)argc; (void)argv;
+
+    
 
     return 0;
 }
