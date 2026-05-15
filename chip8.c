@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 /* macros */
 #define FONTSET_SIZE 80
@@ -78,9 +79,11 @@ void LoadROM(struct Chip8 *chip8, const char *filename)
 /* initialize machine */
 void initChip8(struct Chip8 *chip8)
 {
+    srand(time(NULL));                      //uses current time RNG seed
+
     memset(chip8, 0, sizeof(struct Chip8)); //sets to zero to clean garbage value
 
-    chip8->pc = START_ADDRESS;
+    chip8->pc = START_ADDRESS;              //sets program counter to starting address
     
     //load fonts into memory
     for (int i = 0; i < FONTSET_SIZE; i++)
