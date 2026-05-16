@@ -13,7 +13,7 @@ const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_START_ADDRESS = 0x50;
 
 /* chip 8 machine structure */
-struct Chip8
+typedef struct
 {
     uint8_t registers[16];
     uint8_t memory[4096];
@@ -26,7 +26,7 @@ struct Chip8
     uint8_t keypad[16];
     uint32_t video[64 * 32];
     uint16_t opcode;
-};
+} Chip8;
 
 /* fontset data */
 uint8_t fontset[FONTSET_SIZE] =     //must use preprocessor because global array, VLA is not allowed.
@@ -51,7 +51,7 @@ uint8_t fontset[FONTSET_SIZE] =     //must use preprocessor because global array
 
 
 /* load ROM */
-void LoadROM(struct Chip8 *chip8, const char *filename)
+void LoadROM(Chip8 *chip8, const char *filename)
 {
     FILE *romfPtr;
     
@@ -77,11 +77,11 @@ void LoadROM(struct Chip8 *chip8, const char *filename)
 
 
 /* initialize machine */
-void initChip8(struct Chip8 *chip8)
+void initChip8(Chip8 *chip8)
 {
     srand(time(NULL));                      //uses current time RNG seed
 
-    memset(chip8, 0, sizeof(struct Chip8)); //sets to zero to clean garbage value
+    memset(chip8, 0, sizeof(Chip8)); //sets to zero to clean garbage value
 
     chip8->pc = START_ADDRESS;              //sets program counter to starting address
     
