@@ -95,6 +95,18 @@ void initChip8(Chip8 *chip8)
 }
 
 
+/* chip 8 instructions */
+void OP_00E0(Chip8 *chip8)  //CLS (clear display)
+{
+    memset(chip8->video, 0, sizeof(chip8->video));
+}
+void OP_00EE(Chip8 *chip8)   //RET (return from subroutine)
+{
+    chip8->sp--;
+    chip8->pc = chip8->stack[chip8->sp];
+}
+
+
 /* main  */
 int main(int argc, char *argv[])
 {
