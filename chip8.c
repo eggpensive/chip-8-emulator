@@ -105,6 +105,36 @@ void OP_00EE(Chip8 *chip8)   //RET (return from subroutine)
     chip8->sp--;
     chip8->pc = chip8->stack[chip8->sp];
 }
+void OP_1nnn(Chip8 *chip8)  //JP addr       (jump to location nnn)
+{
+    uint16_t address = chip8->opcode & 0x0FFFu; //extract address only using bitwise operator
+
+    chip8->pc = address;
+}
+void OP_2nnn(Chip8 *chip8)  //CALL addr     (call subroutine at nnn)
+{
+    uint16_t address = chip8->opcode & 0x0FFFu;
+
+    chip8->stack[chip8->sp] = chip8->pc;    //assign next instruction address pc to stack[sp] before call
+                                            //note: no need to increment pc+2 because the cycle has already increment before executing instructions
+    chip8->sp++;
+
+    chip8->pc = address;
+}
+void OP_3xkk(Chip8 *chip8)  //SE Vx, byte   (skip next instruction if Vx = kk)
+{
+    //(SE = skip if equal; V = register)
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;    //mask and shift 8 bit because 1 hex digit = 4 bit.
+                                                    //let  opcode = 3A22; after mask = 0A00; after shift 2 hex = 0A
+                                                    //(note: 0A00 != 0A, that is why bitshifting is necessary)
+    uint8_t byte = chip8->opcode & 0x00FFu;
+
+    if (chip8->registers[Vx] == byte)
+    {
+        chip8->pc += 2;
+    }
+    
+}
 
 
 /* main  */
