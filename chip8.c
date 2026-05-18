@@ -199,6 +199,42 @@ void OP_8xy3(Chip8 *chip8)  //XOR Vx, Vy    (set Vx = Vx XOR Vy)
 
     chip8->registers[Vx] ^= chip8->registers[Vy];
 }
+void OP_8xy4(Chip8 *chip8)  //ADD Vx, Vy    (set Vx = Vx + Vy, set VF = carry)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    uint16_t sum = chip8->registers[Vx] + chip8->registers[Vy]; //16 bit to anticipate 8 bit overflow
+
+    if (sum > 255)   //check if it is greater than 255 (overflow)
+    {                                                           
+        chip8->registers[0xF] = 1;  //set VF to 1, acting as an overflow flag
+    }
+    else
+    {
+        chip8->registers[0xF] = 0;
+    }
+
+    chip8->registers[Vx] = sum & 0xFFu;   //rolls back to zero (equivalent to sum % 256)
+}
+void OP_8xy5(Chip8 *chip8)  //SUB Vx, Vy    (set Vx = Vx - Vy, set VF = NOT borrow)
+{                                           
+    //if Vx > Vy, then set VF to 1, otherwise 0. then Vx = Vx - Vy
+
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    if (chip8->registers[Vx] >= chip8->registers[Vy])
+    {
+        chip8->registers[0xF] = 1;
+    }
+    else
+    {
+        chip8->registers[0xF] = 0;
+    }
+    
+    chip8->registers[Vx] -= chip8->registers[Vy];
+}
 
 
 /* main  */
