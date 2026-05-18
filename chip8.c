@@ -135,6 +135,42 @@ void OP_3xkk(Chip8 *chip8)  //SE Vx, byte   (skip next instruction if Vx = kk)
     }
     
 }
+void OP_4xkk(Chip8 *chip8)  //SNE Vx, byte  (skip next instruction if Vx != kk)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t byte = chip8->opcode & 0x00FFu;
+
+    if (chip8->registers[Vx] != byte)
+    {
+        chip8->pc += 2;
+    }
+    
+}
+void OP_5xy0(Chip8 *chip8)  //SE Vx, Vy     (skip next instruction if Vx = Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    if (chip8->registers[Vx] == chip8->registers[Vy])
+    {
+        chip8->pc += 2;
+    }
+    
+}
+void OP_6xkk(Chip8 *chip8)  //LD Vx, byte   (set Vx = kk) 
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t byte = (chip8->opcode & 0x00FFu);
+
+    chip8->registers[Vx] = byte;
+}
+void OP_7xkk(Chip8 *chip8)  //ADD Vx, byte  (set Vx = Vx + kk)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t byte = chip8->opcode & 0x00FFu;
+
+    chip8->registers[Vx] += byte;
+}
 
 
 /* main  */
