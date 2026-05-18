@@ -171,6 +171,34 @@ void OP_7xkk(Chip8 *chip8)  //ADD Vx, byte  (set Vx = Vx + kk)
 
     chip8->registers[Vx] += byte;
 }
+void OP_8xy0(Chip8 *chip8)  //LD Vx, Vy     (set Vx = Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    chip8->registers[Vx] = chip8->registers[Vy];
+}
+void OP_8xy1(Chip8 *chip8)  //OR Vx, Vy     (set Vx = Vx OR Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    chip8->registers[Vx] |= chip8->registers[Vy];
+}
+void OP_8xy2(Chip8 *chip8)  //AND Vx, Vy    (set Vx = Vx AND Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    chip8->registers[Vx] &= chip8->registers[Vy];
+}
+void OP_8xy3(Chip8 *chip8)  //XOR Vx, Vy    (set Vx = Vx XOR Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    chip8->registers[Vx] ^= chip8->registers[Vy];
+}
 
 
 /* main  */
