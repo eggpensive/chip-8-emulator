@@ -235,6 +235,42 @@ void OP_8xy5(Chip8 *chip8)  //SUB Vx, Vy    (set Vx = Vx - Vy, set VF = NOT borr
     
     chip8->registers[Vx] -= chip8->registers[Vy];
 }
+void OP_8xy6(Chip8 *chip8)  //SHR Vx        (set Vx = Vx SHR 1)
+{
+    //SHR = shift right
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->registers[0xF] = chip8->registers[Vx] & 1;
+    
+    chip8->registers[Vx] >>= 1;
+}
+void OP_8xy7(Chip8 *chip8)  //SUBN Vx, Vy   (set Vx = Vy - Vx, set VF = NOT borrow)
+{
+    //If Vy > Vx, then set VF to 1, otherwise 0. Then Vx = Vy - Vx
+
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    if (chip8->registers[Vy] >= chip8->registers[Vx])
+    {
+        chip8->registers[0xF] = 1;
+    }
+    else
+    {
+        chip8->registers[0xF] = 0;
+    }
+    
+    chip8->registers[Vx] = chip8->registers[Vy] - chip8->registers[Vx];
+}
+void OP_8xyE(Chip8 *chip8)  //SHL Vx        (set Vx = Vx SHL 1)
+{
+    //SHL = shift left
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->registers[0xF] = (chip8->registers[Vx] & 128) >> 7;
+    
+    chip8->registers[Vx] <<= 1;
+}
 
 
 /* main  */
