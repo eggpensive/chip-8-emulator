@@ -271,6 +271,28 @@ void OP_8xyE(Chip8 *chip8)  //SHL Vx        (set Vx = Vx SHL 1)
     
     chip8->registers[Vx] <<= 1;
 }
+void OP_9xy0(Chip8 *chip8)  //SNE Vx, Vy    (skip next instruction if Vx != Vy)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+
+    if (chip8->registers[Vx] != chip8->registers[Vy])
+    {
+        chip8->pc += 2;
+    }
+}
+void OP_Annn(Chip8 *chip8)  //LD I, addr    (set I = nnn)
+{
+    uint16_t address = chip8->opcode & 0x0FFFu;
+
+    chip8->index = address;
+}
+void OP_Bnnn(Chip8 *chip8)  //JP V0, addr    (jump to location nnn + V0)
+{
+    uint16_t address = chip8->opcode & 0x0FFFu;
+
+    chip8->pc = address + chip8->registers[0];
+}
 
 
 /* main  */
