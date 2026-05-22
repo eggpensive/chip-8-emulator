@@ -293,6 +293,52 @@ void OP_Bnnn(Chip8 *chip8)  //JP V0, addr    (jump to location nnn + V0)
 
     chip8->pc = address + chip8->registers[0];
 }
+void OP_Cxkk(Chip8 *chip8)  //RND Vx, byte  (set Vx = random byte AND kk.)
+{
+    //a random number from 0 to 255 is AND-ed with the value kk
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t byte = chip8->opcode & 0x00FFu;
+    
+    chip8->registers[Vx] = (rand() % 256) & byte;
+}
+void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision)
+{
+    //The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). 
+    //Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. 
+    //If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen.
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
+    uint8_t height = chip8->opcode & 0x000Fu;
+
+    uint8_t xPos = chip8->registers[Vx] % 64;   //64 is video width
+    uint8_t yPos = chip8->registers[Vy] % 32;   //32 is video height
+
+    chip8->registers[0xF] = 0;
+
+    for (int row = 0; row < height; row++)
+    {
+        uint8_t spriteByte = chip8->memory[chip8->index + row];
+
+        for (int col = 0; col < 8; col++)
+        {
+            uint8_t spritePixel = spriteByte & (128 >> col); //128 = 1000 0000
+            uint32_t *screenPixel = &chip8->video[(yPos + row) * 64 + (xPos + col)];
+
+            //sprite pixel is on
+            if (spritePixel)
+            {
+                //screen pixel is also on, set collision
+                if (*screenPixel == 0xFFFFFFFF)
+                {
+                    chip8->registers[0xF] = 1;
+                }
+                
+                //toggle screen pixel using XOR
+                *screenPixel ^= 0xFFFFFFFF;
+            }
+        }
+    }
+}
 
 
 /* main  */
