@@ -7,6 +7,8 @@
 
 /* macros */
 #define FONTSET_SIZE 80
+#define VIDEO_WIDTH 64
+#define VIDEO_HEIGHT 32
 
 /* start addresses */
 const unsigned int START_ADDRESS = 0x200;
@@ -24,7 +26,7 @@ typedef struct
     uint8_t delayTimer;
     uint8_t soundTimer;
     uint8_t keypad[16];
-    uint32_t video[64 * 32];
+    uint32_t video[VIDEO_WIDTH * VIDEO_HEIGHT]; //64 * 32
     uint16_t opcode;
 } Chip8;
 
@@ -308,10 +310,11 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
     //If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen.
     uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
     uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
-    uint8_t height = chip8->opcode & 0x000Fu;
+    uint8_t height = chip8->opcode & 0x000Fu;   //height is basically amount of bytes
 
-    uint8_t xPos = chip8->registers[Vx] % 64;   //64 is video width
-    uint8_t yPos = chip8->registers[Vy] % 32;   //32 is video height
+    //modulo is for wrapping around
+    uint8_t xPos = chip8->registers[Vx] % VIDEO_WIDTH;  //VIDEO_WIDTH = 64
+    uint8_t yPos = chip8->registers[Vy] % VIDEO_HEIGHT; //VIDEO_HEIGHT = 32
 
     chip8->registers[0xF] = 0;
 
@@ -322,7 +325,7 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
         for (int col = 0; col < 8; col++)
         {
             uint8_t spritePixel = spriteByte & (128 >> col); //128 = 1000 0000
-            uint32_t *screenPixel = &chip8->video[(yPos + row) * 64 + (xPos + col)];
+            uint32_t *screenPixel = &chip8->video[(yPos + row) * VIDEO_WIDTH + (xPos + col)];   //video is a 1D array, therefore, this calculation is mandatory
 
             //sprite pixel is on
             if (spritePixel)
@@ -330,7 +333,7 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
                 //screen pixel is also on, set collision
                 if (*screenPixel == 0xFFFFFFFF)
                 {
-                    chip8->registers[0xF] = 1;
+                    chip8->registers[0xF] = 1;  //flag collision
                 }
                 
                 //toggle screen pixel using XOR
