@@ -312,9 +312,9 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
     uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
     uint8_t height = chip8->opcode & 0x000Fu;   //height is basically amount of bytes
 
-    //modulo is for wrapping around
-    uint8_t xPos = chip8->registers[Vx] % VIDEO_WIDTH;  //VIDEO_WIDTH = 64
-    uint8_t yPos = chip8->registers[Vy] % VIDEO_HEIGHT; //VIDEO_HEIGHT = 32
+    //origin coordinates
+    uint8_t xOrg = chip8->registers[Vx] % VIDEO_WIDTH;  //VIDEO_WIDTH = 64      note: modulo is for wrapping around
+    uint8_t yOrg = chip8->registers[Vy] % VIDEO_HEIGHT; //VIDEO_HEIGHT = 32
 
     chip8->registers[0xF] = 0;
 
@@ -324,14 +324,17 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
 
         for (int col = 0; col < 8; col++)
         {
+            uint8_t xPos = xOrg + col;
+            uint8_t yPos = yOrg + row;
+
             // a safety net to ignore operations beyond screen boundary
-            if ((yPos + row) > VIDEO_HEIGHT - 1 || (xPos + col) > VIDEO_WIDTH - 1)
+            if (yPos > VIDEO_HEIGHT - 1 || xPos > VIDEO_WIDTH - 1)
             {
                 continue;
             }
             
             uint8_t spritePixel = spriteByte & (128 >> col); //128 = 1000 0000
-            uint32_t *screenPixel = &chip8->video[(yPos + row) * VIDEO_WIDTH + (xPos + col)];   //video is a 1D array, therefore, this calculation is mandatory
+            uint32_t *screenPixel = &chip8->video[(yPos * VIDEO_WIDTH) + xPos];   //video is a 1D array, therefore, this calculation is mandatory
 
             //sprite pixel is on
             if (spritePixel)
