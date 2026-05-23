@@ -351,6 +351,34 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
         }
     }
 }
+void OP_Ex9E(Chip8 *chip8)  //SKP Vx        (skip next instruction if key with the value of Vx is pressed)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    uint8_t key = chip8->registers[Vx];
+
+    if (chip8->keypad[key])
+    {
+        chip8->pc += 2;
+    }
+}
+void OP_ExA1(Chip8 *chip8)  //SKNP Vx       (skip next instruction if key with the value of Vx is not pressed)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    uint8_t key = chip8->registers[Vx];
+
+    if (!chip8->keypad[key])
+    {
+        chip8->pc += 2;
+    }
+}
+void OP_Fx07(Chip8 *chip8)  //LD Vx, DT     (set Vx = delay timer value)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->registers[Vx] = chip8->delayTimer;
+}
 
 
 /* main  */
