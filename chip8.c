@@ -324,6 +324,12 @@ void OP_Dxyn(Chip8 *chip8)  //DRW Vx, Vy, nibble (Display n-byte sprite starting
 
         for (int col = 0; col < 8; col++)
         {
+            // a safety net to ignore operations beyond screen boundary
+            if ((yPos + row) > VIDEO_HEIGHT - 1 || (xPos + col) > VIDEO_WIDTH - 1)
+            {
+                continue;
+            }
+            
             uint8_t spritePixel = spriteByte & (128 >> col); //128 = 1000 0000
             uint32_t *screenPixel = &chip8->video[(yPos + row) * VIDEO_WIDTH + (xPos + col)];   //video is a 1D array, therefore, this calculation is mandatory
 
