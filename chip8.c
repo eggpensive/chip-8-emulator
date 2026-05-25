@@ -379,6 +379,55 @@ void OP_Fx07(Chip8 *chip8)  //LD Vx, DT     (set Vx = delay timer value)
 
     chip8->registers[Vx] = chip8->delayTimer;
 }
+void OP_Fx0A(Chip8 *chip8)  //LD Vx, K      (wait for a key press, store the value of the key in Vx)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    int keyPress = 0;
+
+    //check if any key is pressed
+    for (uint8_t i = 0; i < 16; i++)
+    {
+        if (chip8->keypad[i])
+        {
+            chip8->registers[Vx] = i;
+            keyPress = 1;
+            break;
+        }
+    }
+
+    //pull pc back to current instruction after the increment,
+    //creating a loop that waits until a key is pressed
+    if (!keyPress)
+    {
+        chip8->pc -= 2; 
+    }
+}
+void OP_Fx15(Chip8 *chip8)  //LD DT, Vx     (set delay timer = Vx)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->delayTimer = chip8->registers[Vx];
+}
+void OP_Fx18(Chip8 *chip8)  //LD ST, Vx     (set sound timer = Vx)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->soundTimer = chip8->registers[Vx];
+}
+void OP_Fx1E(Chip8 *chip8)  //ADD I, Vx     (set I = I + Vx)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    chip8->index += chip8->registers[Vx];
+}
+void OP_Fx29(Chip8 *chip8)  //LD F, Vx      (set I = location of sprite for digit Vx)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t digit = chip8->registers[Vx];
+    
+    chip8->index = FONTSET_START_ADDRESS + (5 * digit);  //5 because each font sprite is 5 bytes
+}
 
 
 /* main  */
