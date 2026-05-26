@@ -428,6 +428,40 @@ void OP_Fx29(Chip8 *chip8)  //LD F, Vx      (set I = location of sprite for digi
     
     chip8->index = FONTSET_START_ADDRESS + (5 * digit);  //5 because each font sprite is 5 bytes
 }
+void OP_Fx33(Chip8 *chip8)  //LD B, Vx      (store BCD representation of Vx in memory locations I, I+1, and I+2)
+{
+    //The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I,
+    //the tens digit at location I+1, and the ones digit at location I+2.
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+    uint8_t value = chip8->registers[Vx];
+    
+    chip8->memory[chip8->index + 2] = value % 10;
+    value /= 10;
+
+    chip8->memory[chip8->index + 1] = value % 10;
+    value /= 10;
+
+    chip8->memory[chip8->index] = value;
+}
+void OP_Fx55(Chip8 *chip8)  //LD [I], Vx    (store registers V0 through Vx in memory starting at location I)
+{
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    for (uint8_t i = 0; i <= Vx; i++)
+    {
+        chip8->memory[chip8->index + i] = chip8->registers[i];
+    }
+}
+void OP_Fx65(Chip8 *chip8)  //LD Vx, [I]    (read registers V0 through Vx from memory starting at location I)
+{
+    //The interpreter reads values from memory starting at location I into registers V0 through Vx.
+    uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
+
+    for (uint8_t i = 0; i <= Vx; i++)
+    {
+        chip8->registers[i] = chip8->memory[chip8->index + i];
+    }
+}
 
 
 /* main  */
