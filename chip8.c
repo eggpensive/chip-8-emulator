@@ -77,26 +77,6 @@ void LoadROM(Chip8 *chip8, const char *filename)
     fclose(romfPtr);
 }
 
-
-/* initialize machine */
-void initChip8(Chip8 *chip8)
-{
-    srand(time(NULL));                      //uses current time RNG seed
-
-    memset(chip8, 0, sizeof(Chip8)); //sets to zero to clean garbage value
-
-    chip8->pc = START_ADDRESS;              //sets program counter to starting address
-    
-    //load fonts into memory
-    for (int i = 0; i < FONTSET_SIZE; i++)
-    {
-        chip8->memory[FONTSET_START_ADDRESS + i] = fontset[i];
-    }
-    
-    
-}
-
-
 /* chip 8 instructions */
 void OP_00E0(Chip8 *chip8)  //CLS (clear display)
 {
@@ -462,6 +442,11 @@ void OP_Fx65(Chip8 *chip8)  //LD Vx, [I]    (read registers V0 through Vx from m
         chip8->registers[i] = chip8->memory[chip8->index + i];
     }
 }
+void OP_NULL(Chip8 *chip8)  //DUMMY FUNC    (does nothing)
+{
+    //Do nothing.
+    (void)chip8;    //just to avoid compile warning
+}
 
 /* function pointer tables */
 void (*table[16])(Chip8 *chip8);        //master table
@@ -494,6 +479,35 @@ void TableF(Chip8 *chip8)
     uint8_t lastTwo = chip8->opcode & 0x00FFu;
 
     tableF[lastTwo](chip8);
+}
+
+/* initialize machine */
+void initChip8(Chip8 *chip8)
+{
+    srand(time(NULL));                      //uses current time RNG seed
+
+    memset(chip8, 0, sizeof(Chip8)); //sets to zero to clean garbage value
+
+    chip8->pc = START_ADDRESS;              //sets program counter to starting address
+    
+    //load fonts into memory
+    for (int i = 0; i < FONTSET_SIZE; i++)
+    {
+        chip8->memory[FONTSET_START_ADDRESS + i] = fontset[i];
+    }
+    
+    /* initialize secondary tables */
+    for (int i = 0; i <= 0xE; i++)
+    {
+        //OP_NULL for it does nothing. Just in case if undefined OP functions are accessed.
+        table8[i] = OP_NULL;
+        table0[i] = OP_NULL;
+        tableE[i] = OP_NULL;   
+    }
+    for (int i = 0; i <= 0x65; i++)
+    {
+        tableF[i] = OP_NULL;
+    }
 }
 
 
