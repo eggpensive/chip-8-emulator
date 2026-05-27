@@ -463,6 +463,39 @@ void OP_Fx65(Chip8 *chip8)  //LD Vx, [I]    (read registers V0 through Vx from m
     }
 }
 
+/* function pointer tables */
+void (*table[16])(Chip8 *chip8);        //master table
+void (*table8[0xE + 1])(Chip8 *chip8);  //note: +1 because we need to access index 0xE
+void (*table0[0xE + 1])(Chip8 *chip8);
+void (*tableE[0xE + 1])(Chip8 *chip8);
+void (*tableF[0x65 + 1])(Chip8 *chip8);
+
+/* dispatch functions */
+void Table8(Chip8 *chip8)
+{
+    uint8_t lastDigit = chip8->opcode & 0x000Fu;
+
+    table8[lastDigit](chip8);
+}
+void Table0(Chip8 *chip8)
+{
+    uint8_t lastDigit = chip8->opcode & 0x000Fu;
+
+    table0[lastDigit](chip8);
+}
+void TableE(Chip8 *chip8)
+{
+    uint8_t lastDigit = chip8->opcode & 0x000Fu;
+
+    tableE[lastDigit](chip8);
+}
+void TableF(Chip8 *chip8)
+{
+    uint8_t lastTwo = chip8->opcode & 0x00FFu;
+
+    tableF[lastTwo](chip8);
+}
+
 
 /* main  */
 int main(int argc, char *argv[])
