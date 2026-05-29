@@ -587,7 +587,35 @@ int main(int argc, char *argv[])
 {
     (void)argc; (void)argv;
 
-    
+    //initialize chip 8 machine
+    Chip8 *chip8 = malloc(sizeof(Chip8));
+    initChip8(chip8);
+
+    //initialize SDL
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window *window = SDL_CreateWindow
+    (
+        "Chip-8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+        VIDEO_WIDTH * 10, VIDEO_HEIGHT * 10, SDL_WINDOW_RESIZABLE
+    );
+    SDL_Renderer *renderer = SDL_CreateRenderer
+    (
+        window, -1, SDL_RENDERER_ACCELERATED
+    );
+    SDL_Texture *texture = SDL_CreateTexture
+    (
+        renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING,
+        VIDEO_WIDTH, VIDEO_HEIGHT
+    );
+
+
+    //cleanup
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    free(chip8);
 
     return 0;
 }
