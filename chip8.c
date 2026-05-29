@@ -555,6 +555,32 @@ void initChip8(Chip8 *chip8)
     tableF[0x65] = OP_Fx65;
 }
 
+/* cycle */
+void Cycle(Chip8 *chip8)
+{
+    //fetch
+    chip8->opcode = (chip8->memory[chip8->pc] << 8) | chip8->memory[chip8->pc + 1];
+    chip8->pc += 2;
+
+    //decode
+    uint8_t firstDigit = (chip8->opcode & 0xF000u) >> 12;
+
+    //execute
+    table[firstDigit](chip8);
+
+    //decrement delay timer
+    if (chip8->delayTimer > 0)
+    {
+        chip8->delayTimer--;
+    }
+    
+    //decrement sound timer
+    if (chip8->soundTimer > 0)
+    {
+        chip8->soundTimer--;
+    }
+}
+
 
 /* main  */
 int main(int argc, char *argv[])
