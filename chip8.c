@@ -609,6 +609,137 @@ int main(int argc, char *argv[])
         VIDEO_WIDTH, VIDEO_HEIGHT
     );
 
+    /* main loop */
+    int quit = 0;
+    SDL_Event event;
+
+    while (!quit)
+    {
+        /* process input */
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                quit = 1;
+            }
+            else if (event.type == SDL_KEYDOWN)
+            {
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_ESCAPE:
+                    quit = 1;
+                    break;
+                case SDLK_x:
+                    chip8->keypad[0] = 1;
+                    break;
+                case SDLK_1:
+                    chip8->keypad[1] = 1;
+                    break;
+                case SDLK_2:
+                    chip8->keypad[2] = 1;
+                    break;
+                case SDLK_3:
+                    chip8->keypad[3] = 1;
+                    break;
+                case SDLK_q:
+                    chip8->keypad[4] = 1;
+                    break;
+                case SDLK_w:
+                    chip8->keypad[5] = 1;
+                    break;
+                case SDLK_e:
+                    chip8->keypad[6] = 1;
+                    break;
+                case SDLK_a:
+                    chip8->keypad[7] = 1;
+                    break;
+                case SDLK_s:
+                    chip8->keypad[8] = 1;
+                    break;
+                case SDLK_d:
+                    chip8->keypad[9] = 1;
+                    break;
+                case SDLK_z:
+                    chip8->keypad[0xA] = 1;
+                    break;
+                case SDLK_c:
+                    chip8->keypad[0xB] = 1;
+                    break;
+                case SDLK_4:
+                    chip8->keypad[0xC] = 1;
+                    break;
+                case SDLK_r:
+                    chip8->keypad[0xD] = 1;
+                    break;
+                case SDLK_f:
+                    chip8->keypad[0xE] = 1;
+                    break;
+                case SDLK_v:
+                    chip8->keypad[0xF] = 1;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (event.type == SDL_KEYUP)
+            {
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_x:
+                    chip8->keypad[0] = 0;
+                    break;
+                case SDLK_1:
+                    chip8->keypad[1] = 0;
+                    break;
+                case SDLK_2:
+                    chip8->keypad[2] = 0;
+                    break;
+                case SDLK_3:
+                    chip8->keypad[3] = 0;
+                    break;
+                case SDLK_q:
+                    chip8->keypad[4] = 0;
+                    break;
+                case SDLK_w:
+                    chip8->keypad[5] = 0;
+                    break;
+                case SDLK_e:
+                    chip8->keypad[6] = 0;
+                    break;
+                case SDLK_a:
+                    chip8->keypad[7] = 0;
+                    break;
+                case SDLK_s:
+                    chip8->keypad[8] = 0;
+                    break;
+                case SDLK_d:
+                    chip8->keypad[9] = 0;
+                    break;
+                case SDLK_z:
+                    chip8->keypad[0xA] = 0;
+                    break;
+                case SDLK_c:
+                    chip8->keypad[0xB] = 0;
+                    break;
+                case SDLK_4:
+                    chip8->keypad[0xC] = 0;
+                    break;
+                case SDLK_r:
+                    chip8->keypad[0xD] = 0;
+                    break;
+                case SDLK_f:
+                    chip8->keypad[0xE] = 0;
+                    break;
+                case SDLK_v:
+                    chip8->keypad[0xF] = 0;
+                    break;
+                default:
+                    break;
+                }
+            }
+            
+        }
+    }
 
     //cleanup
     SDL_DestroyTexture(texture);
