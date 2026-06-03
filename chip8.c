@@ -68,6 +68,14 @@ void LoadROM(Chip8 *chip8, const char *filename)
         fseek(romfPtr, 0, SEEK_END);
         long size = ftell(romfPtr);
 
+        //add safety net to avoid opening large files
+        if (size > (4096 - (long)START_ADDRESS))  //memory capacity - rom start address
+        {
+            puts("Unable to open file because file is too large!");
+            exit(1);
+        }
+        
+
         rewind(romfPtr);
 
         fread(&chip8->memory[START_ADDRESS], 1, size, romfPtr);
