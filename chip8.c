@@ -196,16 +196,11 @@ void OP_8xy4(Chip8 *chip8)  //ADD Vx, Vy    (set Vx = Vx + Vy, set VF = carry)
 
     uint16_t sum = chip8->registers[Vx] + chip8->registers[Vy]; //16 bit to anticipate 8 bit overflow
 
-    if (sum > 255)   //check if it is greater than 255 (overflow)
-    {                                                           
-        chip8->registers[0xF] = 1;  //set VF to 1, acting as an overflow flag
-    }
-    else
-    {
-        chip8->registers[0xF] = 0;
-    }
+    uint8_t flag = sum > 255 ? 1 : 0;
 
     chip8->registers[Vx] = sum & 0xFFu;   //rolls back to zero (equivalent to sum % 256)
+
+    chip8->registers[0xF] = flag;
 }
 void OP_8xy5(Chip8 *chip8)  //SUB Vx, Vy    (set Vx = Vx - Vy, set VF = NOT borrow)
 {                                           
@@ -214,25 +209,22 @@ void OP_8xy5(Chip8 *chip8)  //SUB Vx, Vy    (set Vx = Vx - Vy, set VF = NOT borr
     uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
     uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
 
-    if (chip8->registers[Vx] >= chip8->registers[Vy])
-    {
-        chip8->registers[0xF] = 1;
-    }
-    else
-    {
-        chip8->registers[0xF] = 0;
-    }
+    uint8_t flag = chip8->registers[Vx] >= chip8->registers[Vy] ? 1 : 0;
     
     chip8->registers[Vx] -= chip8->registers[Vy];
+
+    chip8->registers[0xF] = flag;
 }
 void OP_8xy6(Chip8 *chip8)  //SHR Vx        (set Vx = Vx SHR 1)
 {
     //SHR = shift right
     uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
 
-    chip8->registers[0xF] = chip8->registers[Vx] & 1;
+    uint8_t flag = chip8->registers[Vx] & 1;
     
     chip8->registers[Vx] >>= 1;
+
+    chip8->registers[0xF] = flag;
 }
 void OP_8xy7(Chip8 *chip8)  //SUBN Vx, Vy   (set Vx = Vy - Vx, set VF = NOT borrow)
 {
@@ -241,25 +233,22 @@ void OP_8xy7(Chip8 *chip8)  //SUBN Vx, Vy   (set Vx = Vy - Vx, set VF = NOT borr
     uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
     uint8_t Vy = (chip8->opcode & 0x00F0u) >> 4;
 
-    if (chip8->registers[Vy] >= chip8->registers[Vx])
-    {
-        chip8->registers[0xF] = 1;
-    }
-    else
-    {
-        chip8->registers[0xF] = 0;
-    }
+    uint8_t flag = chip8->registers[Vy] >= chip8->registers[Vx] ? 1 : 0;
     
     chip8->registers[Vx] = chip8->registers[Vy] - chip8->registers[Vx];
+
+    chip8->registers[0xF] = flag;
 }
 void OP_8xyE(Chip8 *chip8)  //SHL Vx        (set Vx = Vx SHL 1)
 {
     //SHL = shift left
     uint8_t Vx = (chip8->opcode & 0x0F00u) >> 8;
 
-    chip8->registers[0xF] = (chip8->registers[Vx] & 128) >> 7;
+    uint8_t flag = (chip8->registers[Vx] & 128) >> 7;
     
     chip8->registers[Vx] <<= 1;
+
+    chip8->registers[0xF] = flag;
 }
 void OP_9xy0(Chip8 *chip8)  //SNE Vx, Vy    (skip next instruction if Vx != Vy)
 {
