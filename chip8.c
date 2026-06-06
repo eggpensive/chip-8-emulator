@@ -582,8 +582,6 @@ void Cycle(Chip8 *chip8)
 /* main  */
 int main(int argc, char *argv[])
 {
-    (void)argc; (void)argv;
-
     //initialize chip 8 machine
     Chip8 *chip8 = malloc(sizeof(Chip8));
     initChip8(chip8);
@@ -743,6 +741,17 @@ int main(int argc, char *argv[])
             }
             
         }
+        
+        
+        Cycle(chip8);
+
+        int videoPitch = sizeof(chip8->video[0]) * VIDEO_WIDTH;
+        SDL_UpdateTexture(texture, NULL, chip8->video, videoPitch);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay(3);
     }
 
     //cleanup
