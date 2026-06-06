@@ -62,3 +62,6 @@ chip8
 
 # Scratchpad
 test.c
+
+# Chip 8 file
+*.ch8
