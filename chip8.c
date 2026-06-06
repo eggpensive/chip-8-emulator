@@ -588,6 +588,13 @@ int main(int argc, char *argv[])
     Chip8 *chip8 = malloc(sizeof(Chip8));
     initChip8(chip8);
 
+    if (argc != 2)
+    {
+        puts("Invalid load file argument");
+        exit(1);
+    }
+    LoadROM(chip8, argv[1]);
+
     //initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
